@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.retrieval/
+*.log
+.env
+.env.local
+.DS_Store
+.idea/
+.vscode/
+coverage/
+eval/reports/*.json
+!eval/reports/.gitkeep

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Bureaucracy Boss Fight</title>
+    <meta
+      name="description"
+      content="An evidence-grounded game about Kenyan real-world bureaucracy. Kenyan life has become a strategy game."
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%87%A0%F0%9F%87%AA%3C/text%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <!-- ── Top bar ─────────────────────────────────────────────── -->
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-flag" aria-hidden="true"></span>
+          <div class="brand-text">
+            <h1>Bureaucracy Boss Fight</h1>
+            <p class="tagline">Kenyan life has become a strategy game.</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="mode-chip" id="modeChip" title="Which Game Master is running">
+            <span class="dot"></span><span id="modeLabel">connecting…</span>
+          </div>
+          <button class="btn btn-ghost" id="labToggle" aria-pressed="true">Lab Mode</button>
+          <button class="btn btn-ghost" id="newGameBtn">New run</button>
+        </div>
+      </header>
+
+      <!-- ── Start screen ───────────────────────────────────────── -->
+      <section class="start" id="startScreen">
+        <div class="start-inner">
+          <p class="eyebrow">Mission 001 · Nairobi</p>
+          <h2>Umoja wa Wananchi Food Point</h2>
+          <p class="start-brief" id="startBrief">
+            You have KSh 8,000 and no registered business. Somewhere in this city is a
+            process that will make it official, and it costs money you do not have and
+            time you cannot spare.
+          </p>
+
+          <div class="start-grid">
+            <label class="field">
+              <span>Seed <em>(any integer — same seed, same run)</em></span>
+              <input id="seedInput" type="number" value="20260929" min="0" step="1" />
+            </label>
+            <div class="field">
+              <span>Turns</span>
+              <div class="static-field">14</div>
+            </div>
+            <div class="field">
+              <span>Starting capital</span>
+              <div class="static-field">KSh 8,000</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-large" id="startBtn">Start the run</button>
+
+          <div class="start-note" id="startNote"></div>
+
+          <details class="how">
+            <summary>How the grounding works</summary>
+            <div class="how-body">
+              <p>
+                Every statement in this game carries one of four labels, and the label is
+                the point.
+              </p>
+              <ul>
+                <li>
+                  <span class="badge badge-verified">VERIFIED</span> supported by a quoted
+                  source you can open. The deadlines in this mission are real Kenyan law.
+                </li>
+                <li>
+                  <span class="badge badge-inferred">INFERRED</span> a conclusion drawn from
+                  sources, but not itself stated in them.
+                </li>
+                <li>
+                  <span class="badge badge-unknown">UNKNOWN</span> the record does not answer
+                  this. Notably, <strong>the registration fee is UNKNOWN</strong>. The law
+                  authorises the charge and delegates the amount to rules that are not in
+                  this knowledge base, and the open web disagrees with itself by a factor
+                  of seven.
+                </li>
+                <li>
+                  <span class="badge badge-fictional">SIMULATION</span> invented for the game
+                  — prices, queues, weather, customers. Never a claim about Kenya.
+                </li>
+              </ul>
+              <p class="how-foot">
+                The Game Master can only choose between outcomes the engine has already
+                computed. It cannot set a price, invent a requirement, or change your
+                balance. That is enforced in the type signatures, not in a prompt.
+              </p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ── Game ────────────────────────────────────────────────── -->
+      <main class="game" id="gameScreen" hidden>
+        <!-- Mission panel -->
+        <aside class="panel mission">
+          <div class="panel-head">
+            <h3>Mission</h3>
+            <span class="seed-badge" id="seedBadge" title="Replay seed"></span>
+          </div>
+
+          <div class="stats">
+            <div class="stat stat-money">
+              <span class="stat-label">Money</span>
+              <span class="stat-value" id="moneyValue">KSh 0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Turn</span>
+              <span class="stat-value" id="turnValue">0/0</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Day</span>
+              <span class="stat-value" id="dayValue">0</span>
+            </div>
+          </div>
+
+          <div class="turnbar" id="turnbar" aria-hidden="true"></div>
+
+          <h4 class="section-label">Objectives</h4>
+          <ul class="objectives" id="objectives"></ul>
+
+          <h4 class="section-label">Inventory</h4>
+          <ul class="inventory" id="inventory">
+            <li class="empty">Nothing yet.</li>
+          </ul>
+
+          <h4 class="section-label" id="evidenceHead">Evidence gathered</h4>
+          <div class="evidence-counts" id="evidenceCounts"></div>
+        </aside>
+
+        <!-- Conversation -->
+        <section class="panel conversation">
+          <div class="transcript" id="transcript"></div>
+
+          <div class="composer">
+            <div class="actions" id="actionButtons"></div>
+            <form class="freeform" id="actionForm">
+              <input
+                id="actionInput"
+                type="text"
+                autocomplete="off"
+                placeholder="Or do it your own way: “buy a trolley for KSh 5,000”"
+                maxlength="600"
+              />
+              <button class="btn btn-primary" type="submit" id="sendBtn">Act</button>
+            </form>
+            <div class="composer-hint" id="composerHint"></div>
+          </div>
+        </section>
+
+        <!-- Right rail -->
+        <aside class="panel rail">
+          <div class="rail-tabs" role="tablist">
+            <button class="rail-tab is-active" data-tab="evidence" role="tab">Evidence</button>
+            <button class="rail-tab" data-tab="lab" role="tab">Lab</button>
+            <button class="rail-tab" data-tab="sources" role="tab">Sources</button>
+          </div>
+
+          <div class="rail-body" id="tabEvidence"></div>
+          <div class="rail-body" id="tabLab" hidden></div>
+          <div class="rail-body" id="tabSources" hidden></div>
+        </aside>
+      </main>
+
+      <!-- ── Ending overlay ──────────────────────────────────────── -->
+      <div class="overlay" id="endingOverlay" hidden>
+        <div class="overlay-card">
+          <div class="grade" id="endingGrade">–</div>
+          <h2 id="endingTitle"></h2>
+          <p id="endingBlurb"></p>
+          <div class="ending-stats" id="endingStats"></div>
+          <div class="ending-actions">
+            <button class="btn btn-primary" id="replaySameSeed">Replay this seed</button>
+            <button class="btn btn-ghost" id="newSeed">New seed</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="busy" id="busy" hidden><div class="spinner"></div><span id="busyText">thinking…</span></div>
+    </div>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
